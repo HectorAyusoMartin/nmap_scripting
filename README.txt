@@ -8,6 +8,14 @@ nmap_scanner.py | Cyber Scripting | IA data process
         Para procesar la información, este Script hace uso de un algoritmo de Inteligencia Artifical para elaborar el proceso.
 
 
+===Requisitos===
+
+        Las librerias necesarias para la ejecución del script se encuentran en el archivo requirements.txt.
+        Para una instalación automatizada de todas las librerias, se recomienda utilizar el comando pip -r install requirements.txt.
+        Además, para una correcta ejecuciónn de todas las funciones del script, es necesario obtener una API de OpenAi, y guardarla
+        en el archivo de configuración .env con el nombre de 'OPENAI_API_KEY'.
+        Puedes conseguir tu API_KEY en: https://platform.openai.com/settings/organization/api-keys
+        
 
 
 

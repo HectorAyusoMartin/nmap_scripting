@@ -1,4 +1,6 @@
 import nmap
+from openai import OpenAI
+from dotenv import load_dotenv
 
 
 def hosts_scan(network):
@@ -43,12 +45,40 @@ def service_scan(network):
                     network_data[host][proto][port] = {'service': service , 'version': version}
     return network_data              
                     
-                    
-                
+def priorizar_hosts(network_data): 
+    """
+    Recibe los datos funciones anteriores como service_scan()
+    Prioriza los hosts dependiendo de su grado de vulnerabilidad aplicacando un algoritmo de IA,
+    haciendo uso de la API de OpenAi.
+    
+    """      
+    load_dotenv()
+    client = OpenAI()#No le pasamos por argumento la API, por que el nombre que le hemos puesto en .env es el nombre estandar que utiliza esta libreria a la hora de tratar de leerla.
+    chat_completion = client.chat.completions.create(
+        #Creando el Prompt:
+        
+        messages = [
             
-    
-    
-
+            {
+                'role': 'system', 
+                'content' : 'Eres un experto en ciberseguridad y en gestión y priorización de vulnerabilidades '
+            },
+            
+            {
+                'role': 'user',
+                'content' : f"""Teniendo en cuenta el siguiente descubrimiento de host, puertos y servicios, 
+                ordena los hosts de mas vulnerable a menos vulnerable y propon los siguientes pasos para la fase de explotación 
+                para un ejercicio de hacking etico.
+              
+                {network_data}"""
+                
+              }
+        ],
+        
+        model ='gpt-3.5-turbo',  
+        
+    )
+    return chat_completion.choices[0].message.content
 
 
 
@@ -62,9 +92,21 @@ if __name__ == '__main__':
         #print(hosts_activos)
         
         
-    servicios_activos= service_scan('192.168.1.0/24')
-    if servicios_activos:
-        print(servicios_activos)
+    #servicios_activos= service_scan('192.168.1.0/24')
+    #if servicios_activos:
+        #print(servicios_activos)
+        
+        
+    network_data = service_scan('192.168.1.0/24')
+    
+    try:
+        print(network_data)
+        print(priorizar_hosts(network_data))
+    
+    except Exception as e:
+        
+        print(f'Ocurrio un error con el modelo de IA. Error: {e}')
+    
     
     
 
