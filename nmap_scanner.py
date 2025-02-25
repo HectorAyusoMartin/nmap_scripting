@@ -21,7 +21,31 @@ def hosts_scan(network):
     #Explicación del comprehension list de arriba: Para cada host dentro de nm.all_host, en el caso de que para ese host su estado sea 'up'(activo), entonces concatenalo a la lista active_hosts
     return print('Host activos en la Red'),active_hosts
     
-    
+def service_scan(network):
+    """
+    Escanea los puertos y los servicios que se están ejecutando con su correspondiente versión. Después procesa los resultados.
+    """
+    nm = nmap.PortScanner()
+    nm.scan(hosts=network, arguments='-sV')
+    #Diccionario donde guardar todos los resultados que nos devuelve nmap
+    network_data = {}
+    #Recorrer/iterar todos los hosts que haya identificado y todos los puertos que estén abiertos y su servicio ejecutandose.
+    for host in nm.all_hosts():
+        #if nm[host]['status']['state'] == 'up':
+        if nm[host].state() == 'up':
+            network_data[host] = {} #Ek diccionario va a recibir tanto los servicios y puertos como las versiones
+            for proto in nm[host].all_protocols():
+                network_data[host][proto] = {}
+                ports = nm[host][proto].keys()
+                for port in ports:
+                    service = nm[host][proto][port]['name']
+                    version =nm[host][proto][port]['product'] + ' ' + nm[host][proto][port]['version']
+                    network_data[host][proto][port] = {'service': service , 'version': version}
+    return network_data              
+                    
+                    
+                
+            
     
     
 
@@ -31,11 +55,16 @@ def hosts_scan(network):
 
 if __name__ == '__main__':
     
-    hosts_activos = hosts_scan('192.168.1.0/24')
-    if not hosts_activos:
-        print('No Se encontraron Hosts en la red')
-    else:
-        print(hosts_activos)
+    #hosts_activos = hosts_scan('192.168.1.0/24')
+    #if not hosts_activos:
+        #print('No Se encontraron Hosts en la red')
+    #else:
+        #print(hosts_activos)
+        
+        
+    servicios_activos= service_scan('192.168.1.0/24')
+    if servicios_activos:
+        print(servicios_activos)
     
     
 
